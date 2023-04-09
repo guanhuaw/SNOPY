@@ -2,23 +2,25 @@
 
 ### Introduction
 
-Optimizing 3D k-space sampling trajectories is important for efficient MRI yet presents a challenging computational problem. This work proposes a generalized framework for optimizing 3D non-Cartesian sampling patterns via data-driven optimization. The code also supports 2D.
+Optimizing 3D k-space sampling trajectories is important for efficient MRI yet presents a challenging computational problem. This work proposes a generalized framework for optimizing 3D non-Cartesian sampling patterns via data-driven optimization (the code also supports 2D imaging.)
 
-The methods can optimize various properties of sampling trajectory, like the gradient waveform (experiment 3.2.1 in the paper) and the rotation angles (experiment 3.2.2). Users can also optimize properties of their own trajectories, such as the "density" of spiral trajectories. Feel free to contact me (guanhuaw@umich.edu) for any questions.
+The methods can optimize various properties of a sampling trajectory, like the gradient waveform (experiment 3.2.1 in the paper) and the rotation angles (experiment 3.2.2). Users can also optimize properties of their own trajectories, such as the "density" of spiral trajectories. Feel free to contact me (guanhuaw@umich.edu) for any questions.
 
 ### Dependence
 
 An anaconda environment file called `snopy.yml`. You can install it using Conda. Some packages, including MIRTorch, require manual installation from Github.
 
-MIRTorch provides convenient abstraction of system matrices and common equations. Its notebooks are also helpful for beginners.
+MIRTorch provides convenient abstraction of system matrices and common equations. Its demos are also helpful for beginners.
 
-The code structure inherits [CycleGAN and pix2pix in PyTorch](https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix), which is highly modular and use script to pass arguments. You can find more detailed usage guidance and Q&A there.
+The code structure inherits [CycleGAN and pix2pix in PyTorch](https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix), which is highly modular and use script to pass arguments. You can find more detailed guidance and Q&A in that repo.
 
 ### How to tailor/optimize my own sampling trajectory together with reconstruction algorithm?
 
 #### Data requirements and Data-loader
 
 In the exemplary `calgary.py`, we assume that the data pair is stored in `.h5` archives. An test case is [here](https://www.dropbox.com/s/7ycnabypgr2epg4/e14089s3_P53248.7.h5?dl=0). It is also straightforward to create your own dataloader.
+
+The dataset should be categorized into three subfolders, `train`, `test`, and `val`. Pass `--dataroot` to specify the directory.
 
 #### Sampling trajectory initialization and Parameterization
 
@@ -38,15 +40,17 @@ Here we provide two reconstruction algorithms. The first has analytical regulari
 
 ### Visualizer
 
-It is cool see in how the trajectory evolves on a browser, hence the package uses Visdom as the visualizer. You may define a free port with command --display_port (default is 8097, as in basic_options.py). Then you could run 'visdom --port xxxx' to start the visdom service (on a local or remote server). For detailed usage please refer to [CycleGAN and pix2pix in PyTorch](https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix).
+It is cool see in how the trajectory evolves on a browser, hence the package uses Visdom as the visualizer. You may define a free port with command --display_port (default is 8097, as in basic_options.py). Then you could run `visdom --port xxxx` to start the visdom service (on a local or remote server). For detailed usage please refer to [CycleGAN and pix2pix in PyTorch](https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix).
+
+Note that the current visualizer is written for 3D. For optimization, you may want to disable the visualizer by setting `--displays-id` to -1.
 
 ### Passing variables
 
 A simple optimization project, the experiment 3.2.1 on the SNOPY paper, is provided in the script. The code use parser to pass arguments. Definition are in the options folder. Some crucial arguments are listed below:
 
 - --loss_xxxx: control the weighting of loss functions. 
-- --which_model_netD_I: which parameterization strategy is used for sampling trajectory. For example,  SamplingLayerBspline3D for spline-parameterized. It is also straightforward to define new strategies, such as optimizing the rotation angles of radial trajectories.
-- ReconVSTraj: Ratio of updates for recon net and sampling trajectory.
+- --which_model_netG: which parameterization strategy is used for sampling trajectory. For example,  `SamplingLayerBspline3D` for spline-parameterized optimization. It is also straightforward to define new strategies, such as optimizing the rotation angles of radial trajectories.
+- ReconVSTraj: Ratio of updates for recon neural network and sampling trajectory.
 
 ### Parallel training
 
